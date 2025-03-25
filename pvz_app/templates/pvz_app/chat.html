@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ПВЗ Помощник</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            overflow: hidden;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 70%;
+            word-wrap: break-word;
+            clear: both;
+        }
+        .message.user {
+            background: #DCF8C6;
+            margin-left: auto;
+        }
+        .message.assistant {
+            background: #ECECEC;
+            margin-right: auto;
+        }
+        .chat-input {
+            border-top: 1px solid #ddd;
+            padding: 10px;
+            display: flex;
+            background: #f9f9f9;
+        }
+        .chat-input textarea {
+            flex: 1;
+            resize: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .chat-input button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            background: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .chat-input button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+            {% if prompt %}
+                <div class="message user">
+                    {{ prompt }}
+                </div>
+            {% endif %}
+            {% if response_text %}
+                <div class="message assistant">
+                    {{ response_text }}
+                </div>
+            {% endif %}
+        </div>
+        <form method="post" class="chat-input">
+            {% csrf_token %}
+            <textarea name="prompt" placeholder="Введите сообщение..." rows="1" required></textarea>
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+    <script>
+        // Автоматическая прокрутка чата вниз
+        var chatMessages = document.getElementById("chat-messages");
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    </script>
+</body>
+</html>
