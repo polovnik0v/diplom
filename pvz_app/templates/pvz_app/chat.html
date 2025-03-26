@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>ПВЗ Помощник</title>
+    <title>Чат с Ollama</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -73,31 +73,66 @@
             background: #0056b3;
         }
     </style>
+    <!-- Подключаем marked для поддержки Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-messages" id="chat-messages">
-            {% if prompt %}
-                <div class="message user">
-                    {{ prompt }}
-                </div>
-            {% endif %}
-            {% if response_text %}
-                <div class="message assistant">
-                    {{ response_text }}
-                </div>
-            {% endif %}
+            <!-- Сообщения будут добавляться сюда -->
         </div>
-        <form method="post" class="chat-input">
+        <form id="chat-form" class="chat-input">
             {% csrf_token %}
-            <textarea name="prompt" placeholder="Введите сообщение..." rows="1" required></textarea>
+            <textarea name="prompt" id="prompt" placeholder="Введите сообщение..." rows="1" required></textarea>
             <button type="submit">Отправить</button>
         </form>
     </div>
     <script>
-        // Автоматическая прокрутка чата вниз
-        var chatMessages = document.getElementById("chat-messages");
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        const chatForm = document.getElementById('chat-form');
+        const chatMessages = document.getElementById('chat-messages');
+        const promptInput = document.getElementById('prompt');
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userMessage = promptInput.value.trim();
+            if (!userMessage) return;
+
+            // Добавляем сообщение пользователя сразу в чат
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user';
+            userMessageDiv.textContent = userMessage;
+            chatMessages.appendChild(userMessageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Очищаем поле ввода
+            promptInput.value = '';
+
+            // Отправляем AJAX-запрос
+            fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: new URLSearchParams({
+                    "prompt": userMessage,
+                    "csrfmiddlewaretoken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // data.response_text содержит ответ, который может содержать Markdown
+                const assistantMessageHTML = marked.parse(data.response_text);
+                const assistantMessageDiv = document.createElement('div');
+                assistantMessageDiv.className = 'message assistant';
+                assistantMessageDiv.innerHTML = assistantMessageHTML;
+                chatMessages.appendChild(assistantMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
+            .catch(error => {
+                console.error("Ошибка запроса:", error);
+            });
+        });
     </script>
 </body>
 </html>
