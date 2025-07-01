@@ -1,0 +1,120 @@
+/* Общие стили для всего сайта */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #333;
+}
+
+/* Шапка сайта */
+header {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-container h1 {
+    margin: 0;
+    font-size: 2em;
+    color: #1e3c72;
+}
+
+/* Основной контент */
+main {
+    padding: 20px;
+    min-height: calc(100vh - 140px); /* Учитываем высоту header и footer */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Чат-контейнер */
+.chat-container {
+    width: 100%;
+    max-width: 800px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    height: 70vh;
+    overflow: hidden;
+}
+
+/* Сообщения чата */
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    background: #f7f7f7;
+    overflow-y: auto;
+}
+
+/* Отдельное сообщение */
+.message {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    max-width: 70%;
+    clear: both;
+    word-wrap: break-word;
+}
+
+.message.user {
+    background: #DCF8C6;
+    margin-left: auto;
+}
+
+.message.assistant {
+    background: #ECECEC;
+    margin-right: auto;
+}
+
+/* Форма ввода чата */
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background: #f9f9f9;
+    border-top: 1px solid #ddd;
+}
+
+.chat-input textarea {
+    flex: 1;
+    resize: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.chat-input button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    border: none;
+    background: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background: #0056b3;
+}
+
+/* Футер сайта */
+footer {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 0;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.footer-container p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #1e3c72;
+}

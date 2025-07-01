@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -72,15 +72,16 @@
         .chat-input button:hover {
             background: #0056b3;
         }
-    </style>
+    </style> -->
     <!-- Подключаем marked для поддержки Markdown -->
+      <!--
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-messages" id="chat-messages">
+        <div class="chat-messages" id="chat-messages"> -->
             <!-- Сообщения будут добавляться сюда -->
-        </div>
+        <!-- </div>
         <form id="chat-form" class="chat-input">
             {% csrf_token %}
             <textarea name="prompt" id="prompt" placeholder="Введите сообщение..." rows="1" required></textarea>
@@ -134,5 +135,133 @@
             });
         });
     </script>
+</body>
+</html> -->
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Помощник ПВЗ</title>
+
+  <!-- Bootstrap CSS из CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Подключаем marked для поддержки Markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="bg-light">
+
+<!-- Шапка сайта (Navbar) -->
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">Помощник ПВЗ</span>
+  </div>
+</nav>
+
+<!-- Основной контейнер -->
+<div class="container my-4" style="max-width: 1600px;">
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h5 class="card-title mb-0">Задайте свой вопрос</h5>
+    </div>
+    <div class="card-body" id="chat-messages" style="height: 75vh; overflow-y: auto;">
+      <!-- Сообщения будут добавляться сюда через JS -->
+    </div>
+    <div class="card-footer">
+      <form id="chat-form" class="row g-2 align-items-center">
+        {% csrf_token %}
+        <div class="col">
+          <textarea 
+            class="form-control"
+            name="prompt"
+            id="prompt"
+            rows="2"
+            placeholder="Введите сообщение..."
+            required
+          ></textarea>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Отправить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Футер сайта -->
+<footer class="text-center mt-4 text-secondary">
+  <p>2025 Половников Никита</p>
+</footer>
+
+<script>
+  const chatForm = document.getElementById('chat-form');
+  const chatMessages = document.getElementById('chat-messages');
+  const promptInput = document.getElementById('prompt');
+
+  promptInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();          // Отменяем вставку новой строки
+      chatForm.requestSubmit();    // Отправляем форму
+    }
+  });
+
+  chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const userMessage = promptInput.value.trim();
+      if (!userMessage) return;
+
+      // Создаём блок сообщения пользователя (справа)
+      const userMessageDiv = document.createElement('div');
+      userMessageDiv.classList.add('d-flex', 'justify-content-end', 'mb-2');
+      userMessageDiv.innerHTML = `
+        <div class="alert alert-primary fs-5" style="max-width: 70%;">
+          ${userMessage}
+        </div>
+      `;
+      chatMessages.appendChild(userMessageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // Очищаем поле ввода
+      promptInput.value = '';
+
+      // Отправляем AJAX-запрос (POST)
+      fetch("/chat/", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-Requested-With": "XMLHttpRequest"
+          },
+          body: new URLSearchParams({
+              "prompt": userMessage,
+              "csrfmiddlewaretoken": document.querySelector('[name=csrfmiddlewaretoken]').value
+          })
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Преобразуем ответ с помощью marked
+          const assistantMessageHTML = marked.parse(data.response_text);
+          // Создаём блок ответа ассистента (слева)
+          const assistantMessageDiv = document.createElement('div');
+          assistantMessageDiv.classList.add('d-flex', 'justify-content-start', 'mb-2');
+          assistantMessageDiv.innerHTML = `
+            <div class="alert alert-secondary" style="max-width: 70%;">
+              ${assistantMessageHTML}
+            </div>
+          `;
+          chatMessages.appendChild(assistantMessageDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+      })
+      .catch(error => {
+          console.error("Ошибка запроса:", error);
+      });
+  });
+</script>
+
+<!-- Bootstrap Bundle JS (включает Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
